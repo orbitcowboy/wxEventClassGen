@@ -35,7 +35,7 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
     m_staticText1->Wrap( -1 );
     bSizer2->Add( m_staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     m_pEventNameTxtCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer2->Add( m_pEventNameTxtCtrl, 1, wxALIGN_CENTER_VERTICAL | wxALIGN_RIGHT | wxALL, 5 );
+    bSizer2->Add( m_pEventNameTxtCtrl, 1, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
     bSizer1->Add( bSizer2, 1, wxEXPAND, 5 );
 
@@ -45,14 +45,14 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
     m_staticText2->Wrap( -1 );
     bSizer3->Add( m_staticText2, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     m_textCtrl2 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer3->Add( m_textCtrl2, 1, wxALIGN_RIGHT | wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    bSizer3->Add( m_textCtrl2, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
     // Event id
     m_staticText3 = new wxStaticText( this, wxID_ANY, wxT("Event id:"), wxDefaultPosition, wxDefaultSize, 0 );
     m_staticText3->Wrap( -1 );
     bSizer3->Add( m_staticText3, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     m_pEventIdSpinCtrl = new wxSpinCtrl(this, wxID_ANY, wxT("-1"), wxDefaultPosition, wxSize(150, -1), wxSP_ARROW_KEYS, -10000, +10000, -1);
-    bSizer3->Add( m_pEventIdSpinCtrl, 0, wxALIGN_RIGHT | wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    bSizer3->Add( m_pEventIdSpinCtrl, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
     bSizer1->Add( bSizer3, 1, wxEXPAND, 5 );
 
     // horizontal line

@@ -1,210 +1,210 @@
-#/***********************************************************************
-#* SVN: Version Control with Subversion
-#* ---------------------------------------------------------------------
-#* $Id$
-#***********************************************************************
-#* LICENSE AND WARRANTY INFORMATION
-#* ================================
-#* 
-#* Copyright (C) 2011
-#* Forschungseinrichtung Satellitengeodaesie, TU Muenchen &
-#* Bundesamt fuer Kartographie und Geodaesie
-#* Geodetic Observatory Wettzell
-#* Sackenrieder Str. 25
-#* D-93444 Bad Koetzting
-#* Germany
-#*
-#* This program is FREE SOFTWARE under the terms of GNU Lesser General
-#* Public License v3 (or any later version) and may be used following
-#* this definitions as published by the Free Software Foundation at
-#* http://www.gnu.de/documents/lgpl-3.0.en.html. Software parts which
-#* include elements from external software distributions may be under
-#* different licenses as the Sun License/BSD License for the ONC/Sun RPC
-#* (http://www.opensource.org/licenses/bsd-license.php)
-#* and the wxWindows Library Licence for the GUI parts with wxWidgets
-#* (http://www.opensource.org/licenses/wxwindows.php).
-#* In case of variations to the above licenses each particular developer
-#* is responsible for defining the dedicated license conditions and terms.
-#*
-#* This program is distributed in the hope that it will be useful.
-#* IT IS PROVIDED AS IS WITH NO WARRANTIES OF ANY KIND INCLUDING
-#* THE WARRANTIES OF DESIGN, MERCHANTIBILITY AND FITNESS FOR A
-#* PARTICULAR PURPOSE, OR ARISING FROM A COURSE OF DEALING, USAGE
-#* OR TRADE PRACTICE.
-#*
-#* The software is provided with no support and without any obligation
-#* on the part of the Geodetic Observatory Wettzell to assist in its
-#* use, correction, modification or enhancement. THE Geodetic Observatory
-#* Wettzell SHALL HAVE NO LIABILITY WITH RESPECT TO THE INFRINGEMENT OF
-#* COPYRIGHTS, TRADE SECRETS OR ANY PATENTS BY THE SOFTWARE OR ANY PART
-#* THEREOF. In no event will the Geodetic Observatory Wettzell be liable
-#* for any lost revenue or profits or other special, indirect and
-#* consequential damages, even if the Geodetic Observatory Wettzell
-#* has been advised of the possibility of such damages.
-#*
-#* You should have received a copy of the license(s) along with this program.
-#**********************************************************************/
- 
 #***********************************************************************
 #* Description:                                                        *
 #* ------------                                                        *
+#* $Rev: 508 $     Revision of last commit                             *
+#* $Author: ettl $  Author of last commit                              *
+#* $Date: 2014-03-06 15:03:17 +0100 (Thu, 06 Mar 2014) $               *
 #*                                                                     *
-#* Author: Martin Ettl (ettl@fs.wettzell.de)                           *
-#* Date  : 2011-09-15                                                  *
-#*                                                                     *
-#* LINUX-Makefile (gmake): Ubuntu linux                                *
-#* Makefile to compile and build all necessary programms.              *
+#* Tested on Ubuntu Linux and Raspberry Pi (Raspbian)       	       *
+#* Makefile to compile and build programs.               	       	   *
 #*                                                                     *
 #* Usage and basic features:                                           *
 #*                                                                     *
 #*  - make build  [creates the whole project]                          *
 #*  - make clean  [removes all object and binary files]                *
 #*  - make depend [detects header dependencies]                        *
-#*  - make rpc    [generates files using idl2rpc]                      *
+#*  - make style  [formates the source, based on artistic style]       *
 #*                                                                     *
 #***********************************************************************
 
-# ============================================================
-# DEFINITIONS
-# ============================================================
-
-# path settings:
-SOURCE_DIR			= ../src
-OBJECT_DIR			= ../obj
+# Folder definitions
+SRC_DIR				= ../src
+SRC_EXT_DIR         = ../srcext
+SRC_TEST            = ../src-test
+OBJ_DIR				= ../obj
 MAKE_DIR 			= ../make
 BIN_DIR 			= ../bin
 CONFIG_DIR			= ../config
-RPC_DIR 			= ../rpc
-ICON_DIR			= $(SOURCE_DIR)/image
-APPLICATION_NAME                = wxEventClassGen
-
-#######################################################################
-# path to the idl2rpc generated clients
-IDL2RPC_CALL 			= idl2rpc.pl
-#
-#######################################################################
-
-
-#===============================================================================
-# Determine the number cores of the machine, where the makefile is executed.
-# This helps to set the -j option (from make), to speedup the build
-# process of 'large' projects.  
+ICON_DIR			= $(SRC_DIR)/image
+APP_NAME			= wxEventClassGen
+# ----------------------------------------------------------------------
+# Determine the number cores of the machine, where the makefile is 
+# executed. This sets the -j option (from make), to speedup the 
+# build process of 'large' projects.  
 NPROCS=1
-OS:=$(shell uname -s)
-ifeq ($(OS),Linux)
-    NPROCS:=$(shell grep -c ^processor /proc/cpuinfo) 
+OS_TYPE:=$(shell uname -s)
+OS_NAME:=$(shell uname -n)
+ifeq ($(OS_TYPE),Linux)
+	ifneq ($(OS_NAME),raspberrypi)
+		NPROCS_TMP:=$(shell grep -c ^processor /proc/cpuinfo) 
+		ifneq ($(NPROCS_TMP),0)
+			NPROCS:=$(NPROCS_TMP)
+		endif
+	endif
 endif
-#===============================================================================
-# configure wxWidgets build
-WXVERSION		= 2.8
-WXCONFIG_CALL		= `wx-config --cxxflags --version=$(WXVERSION)`
-WXCONFIG_LINKER_CALL	= `wx-config --version=$(WXVERSION) --libs adv,aui,core,base,html,richtext,xml`
 
-#######################################################################
-# c++ - compiler settings
-#
-# if no c++-compiler is specified, choose g++ by default
-ifndef $(CPPCOMPILER)
-         CPPCOMPILER:= g++
+# ----------------------------------------------------------------------
+# Configure wxWidgets build
+WXVERSION = 3.1
+WXCONFIG_CALL = `wx-config --cxxflags --unicode=yes --version=$(WXVERSION)`
+WXCONFIG_LINKER_CALL = `wx-config --version=$(WXVERSION) --libs adv,aui,core,base,html,richtext,xml`
+
+# Determine g++ version numbers CPP_VERSION = [CPP_MAJOR].[CPP_MINOR].[CPP_SUB] 
+CXX_VERSION      = `$(CXX) --version | head -1 | sed -e 's:([^)]*):x:g' |awk -F" " '{ printf $$3 }'`
+CXX_VERSION_GTE5 = $(shell echo `$(CXX) -dumpversion | cut -f1-2 -d.` \>= 5.0 | sed -e 's/\./*100+/g' | bc )
+CXX_VERSION_GTE6 = $(shell echo `$(CXX) -dumpversion | cut -f1-2 -d.` \>= 6.0 | sed -e 's/\./*100+/g' | bc )
+CXX_MAJOR        = $(shell echo $(CXX_VERSION) | cut -d'.' -f1)
+CXX_MINOR        = $(shell echo $(CXX_VERSION) | cut -d'.' -f2)
+CXX_SUB          = $(shell echo $(CXX_VERSION) | cut -d'.' -f3)
+
+# Determine gcc version numbers CC_VERSION = [CC_MAJOR].[CC_MINOR].[CC_SUB] 
+CC_VERSION      = `$(CC) --version | head -1 | sed -e 's:([^)]*):x:g' |awk -F" " '{ printf $$3 }'`
+CC_VERSION_GTE5 = $(shell echo `$(CC) -dumpversion | cut -f1-2 -d.` \>= 5.0 | sed -e 's/\./*100+/g' | bc )
+CC_VERSION_GTE6 = $(shell echo `$(CC) -dumpversion | cut -f1-2 -d.` \>= 6.0 | sed -e 's/\./*100+/g' | bc )
+CC_MAJOR        = $(shell echo $(CC_VERSION) | cut -d'.' -f1)
+CC_MINOR        = $(shell echo $(CC_VERSION) | cut -d'.' -f2)
+CC_SUB          = $(shell echo $(CC_VERSION) | cut -d'.' -f3)
+
+# Activate all sanitizers at once, use SAN=yes
+ifdef SAN
+	ASAN=yes
+	USAN=yes
+	ifeq ($(CXX),$(findstring clang++,$(CXX))) # clang specific checks
+       ISAN=yes
+    endif 
+endif 
+# To compile with the address sanitizer, use the option ASAN=yes
+ifdef ASAN
+	SANITIZE=-fsanitize=address 
+endif 
+# To compile with the undefined sanitizer, use the option  USAN=yes
+ifdef USAN
+	SANITIZE+=-fsanitize=undefined
+	ifeq ($(CXX_VERSION_GTE5),1)
+		SANITIZE+=-fsanitize=float-divide-by-zero
+    	SANITIZE+=-fsanitize=float-cast-overflow
+    	SANITIZE+=-fsanitize=bounds
+    	SANITIZE+=-fsanitize=alignment
+    	SANITIZE+=-fsanitize=object-size
+    	SANITIZE+=-fsanitize=vptr
+	endif
 endif
-CPPCOMPILER_DEFINES     =
-CPPCOMPILER_INCLUDES    = 
-CPP_WFLAGS  		= -O2 -W -Wall -Wshadow -Wno-long-long -Wno-variadic-macros -pedantic -Wno-write-strings -ansi -fno-strict-aliasing 
-CPPCOMPILER_FLAGS    	= $(WXCONFIG_CALL)\
-		          $(CPPCOMPILER_INCLUDES)\
-			  $(CPPCOMPILER_DEFINES)\
-			  $(CPP_WFLAGS)
-CPPCOMPILER_CALL     	= $(CPPCOMPILER) -c $(CPPCOMPILER_FLAGS) -o $@ $< 
-
-#######################################################################
-# c compiler settings
-# if no c-compiler is specified, choose gcc by default
-ifndef $(CCOMPILER)
-         CCOMPILER:= gcc
+# To compile with the integer sanitizer, use the option ISAN=yes
+ifdef ISAN
+	SANITIZE+=-fsanitize=integer
 endif
-CCOMPILER_FLAGS = $(WXCONFIG_CALL) -W -Wall -Wunused -ansi -O2
-CCOMPILER_CALL 	= $(CCOMPILER) -c $(CCOMPILER_FLAGS) -o $@ $< 
+# To compile with the memory sanitizer, use the option MSAN=yes
+# In order to get detailed stack traces with line numbers, please make sure the llvm-symbolizer is set properly.
+# For example: 
+#  $ export MSAN_SYMBOLIZER_PATH=/home/martin/compiler/clang+llvm-3.6.0-rc2-x86_64-linux-gnu/bin/llvm-symbolizer 
+ifdef MSAN
+	SANITIZE+=-fsanitize=memory -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer -fno-optimize-sibling-calls
+endif
 
-#######################################################################
-# linker settings
-LINKER 		= $(CPPCOMPILER)
-LINKER_FLAGS 	= $(WXCONFIG_LINKER_CALL)
-LINKER_CALL 	= $(LINKER) -o $@ $^ $(LINKER_FLAGS)
+# Detect invalid memory access problems (https://gcc.gnu.org/wiki/Intel%20MPX%20support%20in%20the%20GCC%20compiler)
+# This option is available from to GCC-5.xxs. It can be activated by setting PSAN=yes
+ifdef PSAN
+	ifeq ($(CXX_VERSION_GTE5),1)
+		SANITIZE+=-fcheck-pointer-bounds -mmpx -static -static-libmpx 
+    endif 
+endif
 
+# ----------------------------------------------------------------------
+# C++ compiler settings:
+CXX 		= g++
+CXX_INCLUDE	= -I$(SRC_DIR) -I$(SRC_EXT_DIR) -I$(SRC_TEST) -I$(ICON_DIR)
+CXX_OPT		= -O3 -flto
+CXX_DEBUG	= $(SANITIZE)
+CXX_WFLAGS	= -Wno-write-strings -Wno-sign-compare -Wno-long-long -Wno-variadic-macros -fno-strict-aliasing -W -Wall -Wunused -Wshadow \
+			  -Wextra -ansi -pedantic #-Wconversion -Wsign-conversion
+ifeq ($(CXX_VERSION_GTE5),1)
+		CXX_WFLAGS+=-Wswitch-bool -Wlogical-not-parentheses -Wsizeof-array-argument -Wbool-compare
+endif 
+CXXFLAGS 	= $(WXCONFIG_CALL) $(CXX_WFLAGS) $(CXX_DEBUG) $(CXX_INCLUDE) $(CXX_OPT)
+CXX_CALL    = $(CXX) -c $(CXXFLAGS) -o $@ $< 
 
-all: $(BIN_DIR)/$(APPLICATION_NAME)
+# ----------------------------------------------------------------------
+# C compiler settings:
+CC	        = gcc
+CC_INCLUDE  = 
+CC_DEBUG	= $(SANITIZE)
+CC_OPT      = -O3
+CC_WFLAGS   = -W -Wall -Wunused -Wextra -Wconversion -ansi -pedantic
+ifeq ($(CC_VERSION_GTE5),1)
+		CC_WFLAGS+=-Wswitch-bool -Wlogical-not-parentheses -Wsizeof-array-argument -Wbool-compare
+endif
+CFLAGS 	    = $(WXCONFIG_CALL) -I$(CC_INCLUDE) $(CC_OPT) $(CC_WFLAGS)
+CC_CALL     = $(CC) -c $(CFLAGS) -o $@ $< 
 
-# ============================================================
-# LINKER-RULES
-# ===========================================================
-$(BIN_DIR)/$(APPLICATION_NAME) : $(OBJECT_DIR)/Application.o\
-			         $(OBJECT_DIR)/wxEventClassGen.o
+# ----------------------------------------------------------------------
+# Linker settings:
+LINKER      = $(CXX) 
+LDFLAGS     = $(WXCONFIG_LINKER_CALL) $(SANITIZE)
+LINKER_CALL = $(LINKER) -o $@ $^ $(LDFLAGS)
+
+# Targets
+all: $(BIN_DIR)/$(APP_NAME)
+
+# ----------------------------------------------------------------------
+# Linker rules:
+$(BIN_DIR)/$(APP_NAME) : $(OBJ_DIR)/$(APP_NAME).o\
+						 $(OBJ_DIR)/Application.o
 	    
 	$(LINKER_CALL)
-# 
-# ===========================================================
-# SOURCES
-# ===========================================================
-SRCS =  $(SOURCE_DIR)/Application.cpp\
-	$(SOURCE_DIR)/wxEventClassGen.cpp
 
- 
+# ----------------------------------------------------------------------
+# C++ sources:
+SRCS =  $(SRC_DIR)/$(APP_NAME).cpp\
+	    $(SRC_DIR)/Application.cpp
+
+# ----------------------------------------------------------------------
+# C sources: 
 CSRCS =
 
-# ===========================================================
-# SUPPORTING-RULES
-# ===========================================================
-
-
+# ----------------------------------------------------------------------
+# Supported rules: 
 touch:
-	touch $(SOURCE_DIR)/*
-
-#rpc:
-	#$(IDL2RPC_CALL) $(SLR_SCHEDULER_IDL_CONFIG) $(SLR_SCHEDULER_SRC_PATH)/$(SLR_SCHEDULER_IDL_FILE_NAME)
+	/bin/touch $(SRC_DIR)/*
 
 build: mrproper depend 
 	# after generating the dependencies it is necessary to call make again
-	make -j$(NPROCS) all 
+	/usr/bin/make -j$(NPROCS) all 
 
-
-install: build
-	/usr/bin/install -d /usr/bin/
-	/usr/bin/install ../bin/$(APPLICATION_NAME) /usr/bin/
 clean:
-	rm -f $(BIN_DIR)/*
-	rm -f $(OBJECT_DIR)/*
-	rm -f $(SOURCE_DIR)/*.orig
-	rm -f $(SOURCE_DIR)/*.bck
-	rm -f $(MAKE_DIR)/.Makefile*
-	rm -f $(MAKE_DIR)/*.bck
-	rm -f $(MAKE_DIR)/*.bak
+	/bin/rm -f $(BIN_DIR)/$(APP_NAME)
+	/bin/rm -f $(OBJ_DIR)/*.o
+	/bin/rm -f $(SRC_DIR)/*.orig
+	/bin/rm -f $(SRC_DIR)/*.bck
+	/bin/rm -f $(MAKE_DIR)/.Makefile*
+	/bin/rm -f $(MAKE_DIR)/*.bck
+	/bin/rm -f $(MAKE_DIR)/*.bak
 
 mrproper: clean
-	rm -f $(CONFIG_DIR)/*.bck
+	/bin/rm -f $(CONFIG_DIR)/*.bck
 
 style:
-	find $(SOURCE_DIR) -name "*.cpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
-	find $(SOURCE_DIR) -name "*.hpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
-	find $(SOURCE_DIR) -name "*.c"   -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
-	find $(SOURCE_DIR) -name "*.h"   -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
+	/usr/bin/find $(SRC_DIR) -name "*.cpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
+	/usr/bin/find $(SRC_DIR) -name "*.hpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
+	/usr/bin/find $(SRC_DIR) -name "*.c"   -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
+	/usr/bin/find $(SRC_DIR) -name "*.h"   -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
 
 depend:
 	@cat < /dev/null > makedep
 	@cat < /dev/null > cmakedep
 # First C++
 	@for i in ${SRCS}; do \
-		 (echo $$i; $(CPPCOMPILER) $(CPPCOMPILER_FLAGS) -MM $$i >> makedep); done
-#       Write full path information before each *.o-dependency
+		 (echo $$i; $(CXX) $(CXXFLAGS) -MM $$i >> makedep); done
+# Write full path information before each *.o-dependency
 	@echo 's/.*\.o:/..\/obj\/&/g' > eddep
 	@sed -f eddep makedep > makedep1
 	@mv makedep1 makedep
 	@rm eddep
-#       Add the rule to each dependency
+# Add the rule to each dependency
 	@echo 'a' > eddep
-	@echo '	$$(CPPCOMPILER_CALL)' >> eddep
+	@echo '	$$(CXX_CALL)' >> eddep
 	@echo '.' >> eddep
 	@echo 'g/.*\.o:/i\' >> eddep
-	@echo '	$$(CPPCOMPILER_CALL)\' >> eddep
+	@echo '	$$(CXX_CALL)\' >> eddep
 	@echo '.' >> eddep
 	@echo '1,1d' >> eddep
 	@echo 'w' >> eddep
@@ -212,18 +212,18 @@ depend:
 	@rm eddep
 # Then C
 	@for i in ${CSRCS}; do \
-		 (echo $$i; $(CCOMPILER) $(CCOMPILER_FLAGS) -MM $$i >> cmakedep); done
-#       Write full path information before each *.o-dependency
+		 (echo $$i; $(CC_CALL) $(CFLAGS) -MM $$i >> cmakedep); done
+# Write full path information before each *.o-dependency
 	@echo 's/.*\.o:/..\/obj\/&/g' > ceddep
 	@sed -f ceddep cmakedep > cmakedep1
 	@mv cmakedep1 cmakedep
 	@rm ceddep
-##       Add the rule to each dependency
+# Add the rule to each dependency
 	@echo 'a' > ceddep
-	@echo '	$$(CCOMPILER_CALL)' >> ceddep
+	@echo '	$$(CC_CALL)' >> ceddep
 	@echo '.' >> ceddep
 	@echo 'g/.*\.o:/i\' >> ceddep
-	@echo '	$$(CCOMPILER_CALL)\' >> ceddep
+	@echo '	$$(CC_CALL)\' >> ceddep
 	@echo '.' >> ceddep
 	@echo '1,1d' >> ceddep
 	@echo 'w' >> ceddep

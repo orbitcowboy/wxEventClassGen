@@ -26,7 +26,7 @@ class wxEventClassGen : public wxFrame
         enum wxIDs
         {
             ID_GENERATE_BTN = wxID_HIGHEST + 1
-            , ID_QUIT
+                              , ID_QUIT
             , ID_ABOUT
         };
 
