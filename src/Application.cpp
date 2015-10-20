@@ -1,7 +1,5 @@
-// --------------------------
-/// @author ettl martin
-/// @date   2012-01-24
-// --------------------------
+/// @author Dr. Martin Ettl
+/// @date   2015-10-20
 
 #include "Application.hpp"
 #include "wxEventClassGen.hpp"
