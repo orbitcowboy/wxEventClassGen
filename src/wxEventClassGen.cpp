@@ -73,7 +73,85 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
     bSizer5 = new wxBoxSizer( wxVERTICAL );
     wxStaticBoxSizer* sbSizer3;
     sbSizer3 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Output") ), wxVERTICAL );
-    m_pOutput = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE | wxTE_READONLY );
+    m_pOutput = new wxStyledTextCtrl( this, wxID_ANY );
+    enum
+    {
+        MARGIN_LINE_NUMBERS,
+        MARGIN_FOLD
+    };
+    m_pOutput->StyleClearAll();
+    m_pOutput->SetLexer(wxSTC_LEX_CPP);
+
+    m_pOutput->SetMarginWidth (MARGIN_LINE_NUMBERS, 50);
+    m_pOutput->StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (75, 75, 75) );
+    m_pOutput->StyleSetBackground (wxSTC_STYLE_LINENUMBER, wxColour (220, 220, 220));
+    m_pOutput->SetMarginType (MARGIN_LINE_NUMBERS, wxSTC_MARGIN_NUMBER);
+
+
+    // ---- Enable code folding
+    m_pOutput->SetMarginType (MARGIN_FOLD, wxSTC_MARGIN_SYMBOL);
+    m_pOutput->SetMarginWidth(MARGIN_FOLD, 15);
+    m_pOutput->SetMarginMask (MARGIN_FOLD, wxSTC_MASK_FOLDERS);
+    m_pOutput->StyleSetBackground(MARGIN_FOLD, wxColor(200, 200, 200) );
+    m_pOutput->SetMarginSensitive(MARGIN_FOLD, true);
+
+    // Properties found from http://www.scintilla.org/SciTEDoc.html
+    m_pOutput->SetProperty (wxT("fold"),         wxT("1") );
+    m_pOutput->SetProperty (wxT("fold.comment"), wxT("1") );
+    m_pOutput->SetProperty (wxT("fold.compact"), wxT("1") );
+
+    wxColor grey( 100, 100, 100 );
+    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDER, wxSTC_MARK_ARROW );
+    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDER, grey);
+    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDER, grey);
+
+    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_ARROWDOWN);
+    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDEROPEN, grey);
+    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDEROPEN, grey);
+
+    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_EMPTY);
+    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDERSUB, grey);
+    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDERSUB, grey);
+
+    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDEREND,     wxSTC_MARK_ARROW);
+    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDEREND, grey);
+    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDEREND, _T("WHITE"));
+
+    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_ARROWDOWN);
+    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDEROPENMID, grey);
+    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDEROPENMID, _T("WHITE"));
+
+    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_EMPTY);
+    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDERMIDTAIL, grey);
+    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDERMIDTAIL, grey);
+
+    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_EMPTY);
+    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDERTAIL, grey);
+    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDERTAIL, grey);
+    // ---- End of code folding part
+
+    m_pOutput->SetWrapMode (wxSTC_WRAP_WORD); // other choice is wxSCI_WRAP_NONE
+
+    m_pOutput->StyleSetForeground (wxSTC_C_STRING,            wxColour(150, 0, 0));
+    m_pOutput->StyleSetForeground (wxSTC_C_PREPROCESSOR,      wxColour(165, 105, 0));
+    m_pOutput->StyleSetForeground (wxSTC_C_IDENTIFIER,        wxColour(40, 0, 60));
+    m_pOutput->StyleSetForeground (wxSTC_C_NUMBER,            wxColour(0, 150, 0));
+    m_pOutput->StyleSetForeground (wxSTC_C_CHARACTER,         wxColour(150, 0, 0));
+    m_pOutput->StyleSetForeground (wxSTC_C_WORD,              wxColour(0, 0, 150));
+    m_pOutput->StyleSetForeground (wxSTC_C_WORD2,             wxColour(0, 150, 0));
+    m_pOutput->StyleSetForeground (wxSTC_C_COMMENT,           wxColour(150, 150, 150));
+    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTLINE,       wxColour(150, 150, 150));
+    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTDOC,        wxColour(150, 150, 150));
+    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTDOCKEYWORD, wxColour(0, 0, 200));
+    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTDOCKEYWORDERROR, wxColour(0, 0, 200));
+    m_pOutput->StyleSetBold(wxSTC_C_WORD, true);
+    m_pOutput->StyleSetBold(wxSTC_C_WORD2, true);
+    m_pOutput->StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
+
+    // a sample list of keywords, I haven't included them all to keep it short...
+    m_pOutput->SetKeyWords(0, wxT("return for while break continue if switch define"));
+    m_pOutput->SetKeyWords(1, wxT("const int float void char double long"));
+
     sbSizer3->Add( m_pOutput, 5, wxALL | wxEXPAND, 5 );
 
     bSizer5->Add( sbSizer3, 5, wxEXPAND, 5 );
@@ -124,60 +202,54 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
                 "#ifndef __class_" + strEventName + "___\n"
                 "#define __class_" + strEventName + "___\n"
                 "#include <wx/wx.h>\n"
-                "#include <wx/event.h>\n"
-                "// declare the custom eventtype, this is the wxWidgets way to predefine an event class\n"
+                "#include <wx/event.h>\n\n"
+                "/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
                 "DECLARE_EVENT_TYPE( " + strEventName + "CommandEvent, -1 )\n"
-                "\n"
-                "// ---------------------------------------------------------------------------------\n"
+                "\n\n"
                 "///\\brief This is a custom event class.\n"
                 "///@author martin ettl (ettl.martin78 (at) googlemail (dot) com)\n"
                 "///@date  " + std::string(__DATE__) + "\n"
-                "\n"
-                "// ---------------------------------------------------------------------------------\n"
+                "\n\n"
                 "class " + strEventName + ": public wxCommandEvent\n"
                 "{\n"
                 "	public:\n"
-                "		///\\brief a custom event id, define as many as you want\n"
-                "		static const long m_sci" + strEventName + "EventId = " + strEventId + ";\n"
-                "		// ----------------------------------------------\n"
-                "		/// Ctor of class " + strEventName + "\n"
+                "		/// @brief a custom event id, define as many as you want\n"
+                "		static const long m_sci" + strEventName + "EventId = " + strEventId + ";\n\n"
+                "		/// Constructor of class " + strEventName + "\n"
                 "		///\n"
-                "		/// \\param commandType --> the event type\n"
-                "		/// \\param id  		--> the event id\n"
-                "		// ----------------------------------------------\n"
+                "		/// @param[in] commandType The event type\n"
+                "		/// @param[in] id  		   The event id. The default value is 0.\n"
                 "		" + strEventName + "( wxEventType commandType = " + strEventName + "CommandEvent, int id = 0 )\n"
                 "			:  wxCommandEvent(commandType, id)\n"
-                "		{}\n"
-                "		// -------------------------------------------------------------\n"
-                "		/// copy Ctor\n"
+                "		{}\n\n"
+                "		/// @brief Copy constructor \n"
                 "		///\n"
-                "		/// \\param event --> a " + strEventName + "Event object\n"
-                "		// -------------------------------------------------------------\n"
+                "		/// @param[in] event An " + strEventName + "-event object.\n"
                 "		" + strEventName + "( const " + strEventName + " &event )\n"
                 "			:  wxCommandEvent(event)\n"
-                "		{}\n"
-                "		// Required for sending with wxPostEvent()\n"
-                "		wxEvent* Clone() const\n"
+                "		{}\n\n"
+                "		/// @brief This Clone function is required for sending with wxPostEvent().\n"
+                "		wxEvent* Clone(void) const\n"
                 "		{\n"
                 "			return new " + strEventName + "(*this);\n"
                 "		}\n"
-                "};\n"
-                "typedef void (wxEvtHandler::*" + strEventName + "EventFunction)(" + strEventName + " &); \n"
-                "// This #define simplifies the one below, and makes the syntax less 		\n"
-                "// ugly if you want to use Connect() instead of an event table. 			\n"
-                "#define " + strEventName + "Handler(func) 					    			  \\\n"
-                "	(wxObjectEventFunction)(wxEventFunction)(wxCommandEventFunction)	  \\\n"
-                "	wxStaticCastEvent(" + strEventName + "EventFunction, &func)					    \n"
-                "// Define the event table entry. Yes, it really *does* end in a comma.		\n"
-                "#define " + strEventTableEntry + "(id, fn)									 \\\n"
+                "};\n\n\n"
+                "typedef void (wxEvtHandler::*" + strEventName + "EventFunction)(" + strEventName + " &);\n\n"
+                "// This #define simplifies the one below, and makes the syntax less\n"
+                "// ugly if you want to use Connect() instead of an event table.\n"
+                "#define " + strEventName + "Handler(func) \\\n"
+                "	(wxObjectEventFunction)(wxEventFunction)(wxCommandEventFunction)\\\n"
+                "	wxStaticCastEvent(" + strEventName + "EventFunction, &func)\n\n\n"
+                "// Define the event table entry. Yes, it really *does* end in a comma.\n"
+                "#define " + strEventTableEntry + "(id, fn)\\\n"
                 "	DECLARE_EVENT_TABLE_ENTRY(" + strEventName + "CommandEvent, id, wxID_ANY,\\\n"
-                "							 (wxObjectEventFunction)(wxEventFunction)    \\\n"
-                "							 (wxCommandEventFunction) wxStaticCastEvent( \\\n"
-                "									   " + strEventName + "EventFunction, &fn ), (wxObject*) NULL ),\n"
+                "							 (wxObjectEventFunction)(wxEventFunction)\\\n"
+                "							 (wxCommandEventFunction) wxStaticCastEvent(\\\n"
+                "							" + strEventName + "EventFunction, &fn ), (wxObject*) NULL ),\n\n\n"
                 "// Optionally, you can do a similar #define for EVT_" + strEventTableEntry + "_RANGE.\n"
-                "#define " + strEventTableEntry + "_RANGE(id1,id2, fn)                         \\\n"
-                "	DECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, id1, id2,    \\\n"
-                "							   " + strEventName + "Handler(fn), (wxObject*) NULL ),\n"
+                "#define " + strEventTableEntry + "_RANGE(id1,id2, fn) \\\n"
+                "	DECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, id1, id2, \\\n"
+                "							   " + strEventName + "Handler(fn), (wxObject*) NULL ),\n\n"
                 "#endif // __class_" + strEventName + "___\n");
             m_pOutput->Clear();
             m_pOutput->SetValue(wxString(strResult.c_str(), wxConvUTF8));

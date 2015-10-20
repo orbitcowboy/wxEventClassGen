@@ -47,7 +47,7 @@ endif
 # Configure wxWidgets build
 WXVERSION = 3.1
 WXCONFIG_CALL = `wx-config --cxxflags --unicode=yes --version=$(WXVERSION)`
-WXCONFIG_LINKER_CALL = `wx-config --version=$(WXVERSION) --libs adv,aui,core,base,html,richtext,xml`
+WXCONFIG_LINKER_CALL = `wx-config --version=$(WXVERSION) --libs adv,aui,core,base,html,richtext,xml,stc`
 
 # Determine g++ version numbers CPP_VERSION = [CPP_MAJOR].[CPP_MINOR].[CPP_SUB] 
 CXX_VERSION      = `$(CXX) --version | head -1 | sed -e 's:([^)]*):x:g' |awk -F" " '{ printf $$3 }'`
