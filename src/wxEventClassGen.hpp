@@ -17,6 +17,7 @@
 #include <wx/wx.h>
 #include <wx/aboutdlg.h>
 #include <wx/spinctrl.h>
+#include <wx/config.h>
 
 /// Use wxStyledTextCtrl to display the generated source code (https://wiki.wxwidgets.org/WxStyledTextCtrl).
 #include <wx/stc/stc.h>
@@ -40,17 +41,17 @@ class wxEventClassGen : public wxFrame
 
     protected:
 
-        wxStaticText     * m_staticText1;
         wxTextCtrl       * m_pEventNameTxtCtrl;
         wxStaticText     * m_staticText2;
-        wxTextCtrl       * m_textCtrl2;
-        wxButton         * m_pGenerateEventBtn;
+        wxTextCtrl       * m_pEventTableEntryNameTxtCtrl;
+        wxBitmapButton   * m_pGenerateEventBtn;
         wxStyledTextCtrl * m_pOutput;
         wxStaticText     * m_staticText3;
         wxSpinCtrl       * m_pEventIdSpinCtrl;
         wxMenuBar        * m_pMenubar;
         wxMenu           * m_pFileMenu;
         wxMenu           * m_pHelpMenu;
+        wxConfig         * m_config;
 
         void vOnButton(wxCommandEvent&);
         void vOnQuit  (wxCommandEvent&);
@@ -59,6 +60,9 @@ class wxEventClassGen : public wxFrame
 
         void vSetUpMenuBar  (void);
         void vSetUpStatusBar(void);
+
+        void SaveCurrentProgramSettings(void);
+        void RestoreCurrentProgramSettings(void);
 
     public:
 

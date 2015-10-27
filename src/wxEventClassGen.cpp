@@ -1,7 +1,5 @@
-// --------------------------
-/// @author ettl martin
+/// @author Dr. Martin Ettl
 /// @date   2012-05-25
-// --------------------------
 
 #include "wxEventClassGen.hpp"
 #include "gear.xpm"
@@ -15,7 +13,8 @@ BEGIN_EVENT_TABLE(wxEventClassGen, wxFrame)
     EVT_MENU(ID_QUIT          , wxEventClassGen::vOnQuit)
 END_EVENT_TABLE()
 
-wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxFrame( parent, id, title, pos, size, style )
+wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
+    : wxFrame( parent, id, title, pos, size, style )
 {
     // set up the menu bar
     vSetUpMenuBar();
@@ -25,48 +24,32 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
 
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    wxStaticBoxSizer* bSizer1;
-    bSizer1 = new wxStaticBoxSizer( wxVERTICAL, this, wxT(""));
+    wxStaticBoxSizer* bSizer1 = new wxStaticBoxSizer( wxVERTICAL, this, wxT(""));
+
+    wxBoxSizer *userInputSizer = new wxBoxSizer(wxHORIZONTAL);
 
     // Name of event
-    wxBoxSizer* bSizer2;
-    bSizer2 = new wxBoxSizer( wxHORIZONTAL );
-    m_staticText1 = new wxStaticText( this, wxID_ANY, wxT("Name of event:"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_staticText1->Wrap( -1 );
-    bSizer2->Add( m_staticText1, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticBoxSizer* bSizer2 = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Name of event:") );
     m_pEventNameTxtCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     bSizer2->Add( m_pEventNameTxtCtrl, 1, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-
-    bSizer1->Add( bSizer2, 1, wxEXPAND, 5 );
+    userInputSizer->Add( bSizer2, 1, wxEXPAND, 5 );
 
     // Eventtable entry
-    wxBoxSizer* bSizer3 = new wxBoxSizer( wxHORIZONTAL );
-    m_staticText2 = new wxStaticText( this, wxID_ANY, wxT("Name of eventtable entry:"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_staticText2->Wrap( -1 );
-    bSizer3->Add( m_staticText2, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    m_textCtrl2 = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer3->Add( m_textCtrl2, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticBoxSizer* bSizer3 = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Name of eventtable entry:") );
+    m_pEventTableEntryNameTxtCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer3->Add( m_pEventTableEntryNameTxtCtrl, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    userInputSizer->Add( bSizer3, 1, wxEXPAND, 5 );
 
     // Event id
-    m_staticText3 = new wxStaticText( this, wxID_ANY, wxT("Event id:"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_staticText3->Wrap( -1 );
-    bSizer3->Add( m_staticText3, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    wxStaticBoxSizer* bSizer4 = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Event id:") );
     m_pEventIdSpinCtrl = new wxSpinCtrl(this, wxID_ANY, wxT("-1"), wxDefaultPosition, wxSize(150, -1), wxSP_ARROW_KEYS, -10000, +10000, -1);
-    bSizer3->Add( m_pEventIdSpinCtrl, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    bSizer1->Add( bSizer3, 1, wxEXPAND, 5 );
-
-    // horizontal line
-    bSizer1->Add( new wxStaticLine(this), 1, wxEXPAND, 0 );
+    bSizer4->Add( m_pEventIdSpinCtrl, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    userInputSizer->Add( bSizer4, 0, wxEXPAND, 5 );
 
     // Generate button
-    wxBoxSizer* bSizer4;
-    bSizer4 = new wxBoxSizer( wxHORIZONTAL);
-    wxBitmap Label(gear_xpm);
-    bSizer4->Add( new wxStaticBitmap ( this, wxID_ANY, Label ), 0, wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL, 15 );
-    m_pGenerateEventBtn = new wxButton( this, ID_GENERATE_BTN, wxT("Generate"), wxDefaultPosition, wxSize(-1, 40), 5 );
-    bSizer4->Add( m_pGenerateEventBtn, 1, wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL, 15 );
-
-    bSizer1->Add( bSizer4, 1, wxEXPAND | wxALL, 15 );
+    m_pGenerateEventBtn = new wxBitmapButton( this, ID_GENERATE_BTN, wxBitmap(gear_xpm), wxDefaultPosition);
+    userInputSizer->Add( m_pGenerateEventBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    bSizer1->Add(userInputSizer, 1, wxALL | wxEXPAND, 5);
 
     // Output
     wxBoxSizer* bSizer5;
@@ -158,10 +141,38 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
 
     this->SetSizer( bSizer1 );
     this->Layout();
+
+    RestoreCurrentProgramSettings();
 }
 
 wxEventClassGen::~wxEventClassGen()
 {
+    SaveCurrentProgramSettings();
+}
+
+void wxEventClassGen::SaveCurrentProgramSettings(void)
+{
+    m_config->Write("wxEventClassGen.m_pEventNameTxtCtrl", m_pEventNameTxtCtrl->GetValue());
+    m_config->Write("wxEventClassGen.m_pEventTableEntryNameTxtCtrl", m_pEventTableEntryNameTxtCtrl->GetValue());
+
+    // cleanup
+    delete m_config;
+}
+
+void wxEventClassGen::RestoreCurrentProgramSettings(void)
+{
+    m_config = new wxConfig(wxFrame::GetTitle());
+
+    // Restore recent user inputs
+    wxString currentValue;
+    if( m_config->Read("wxEventClassGen.m_pEventNameTxtCtrl", &currentValue) )
+    {
+        m_pEventNameTxtCtrl->SetValue(currentValue);
+    }
+    if( m_config->Read("wxEventClassGen.m_pEventTableEntryNameTxtCtrl", &currentValue) )
+    {
+        m_pEventTableEntryNameTxtCtrl->SetValue(currentValue);
+    }
 }
 
 /** Event callback when a margin is clicked, used here for code folding */
@@ -197,7 +208,7 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
                 break;
             }
 
-            const wxString strEventTableEntry(m_textCtrl2->GetValue());
+            const wxString strEventTableEntry(m_pEventTableEntryNameTxtCtrl->GetValue());
             if(strEventTableEntry.empty())
             {
                 wxString strMessage(wxT("Please enter the event table macro name, e.g.: EVT_CUSTOM. Without this information the eventclass cannot be generated."));
@@ -214,8 +225,8 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
 
             // Ok, now input is here --> generate the class
             const wxString strResult(
-                "#ifndef CLASS" + strEventName.Capitalize() + "__HPP\n"
-                "#define CLASS" + strEventName.Capitalize() + "__HPP\n\n"
+                "#ifndef CLASS" + strEventName.Upper() + "__HPP\n"
+                "#define CLASS" + strEventName.Upper() + "__HPP\n\n"
                 "#include <wx/wx.h>\n"
                 "#include <wx/event.h>\n\n"
                 "/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
@@ -265,7 +276,7 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
                 "#define " + strEventTableEntry + "_RANGE(id1,id2, fn) \\\n"
                 "	DECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, id1, id2, \\\n"
                 "							   " + strEventName + "Handler(fn), (wxObject*) NULL ),\n\n"
-                "#endif // class_" + strEventName.Capitalize() + "__HPP\n");
+                "#endif // class_" + strEventName.Upper() + "__HPP\n");
             m_pOutput->Clear();
             m_pOutput->SetValue(strResult);
             break;
