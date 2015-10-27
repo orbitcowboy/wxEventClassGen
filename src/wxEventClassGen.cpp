@@ -74,11 +74,7 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
     wxStaticBoxSizer* sbSizer3;
     sbSizer3 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Output") ), wxVERTICAL );
     m_pOutput = new wxStyledTextCtrl( this, wxID_ANY );
-    enum
-    {
-        MARGIN_LINE_NUMBERS,
-        MARGIN_FOLD
-    };
+
     m_pOutput->StyleClearAll();
     m_pOutput->SetLexer(wxSTC_LEX_CPP);
 
@@ -128,6 +124,10 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
     m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_EMPTY);
     m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDERTAIL, grey);
     m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDERTAIL, grey);
+
+    // Connect the event handler for code folding
+    m_pOutput->Connect(wxEVT_STC_MARGINCLICK, wxStyledTextEventHandler(wxEventClassGen::OnMarginClick), NULL, this);
+
     // ---- End of code folding part
 
     m_pOutput->SetWrapMode (wxSTC_WRAP_WORD); // other choice is wxSCI_WRAP_NONE
@@ -148,14 +148,12 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
     m_pOutput->StyleSetBold(wxSTC_C_WORD2, true);
     m_pOutput->StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
 
-    // a sample list of keywords, I haven't included them all to keep it short...
+    // Configure keyword highlighting
     m_pOutput->SetKeyWords(0, wxT("return for while break continue if switch define"));
     m_pOutput->SetKeyWords(1, wxT("const int float void char double long"));
 
     sbSizer3->Add( m_pOutput, 5, wxALL | wxEXPAND, 5 );
-
     bSizer5->Add( sbSizer3, 5, wxEXPAND, 5 );
-
     bSizer1->Add( bSizer5, 15, wxEXPAND, 5 );
 
     this->SetSizer( bSizer1 );
@@ -164,6 +162,20 @@ wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxStrin
 
 wxEventClassGen::~wxEventClassGen()
 {
+}
+
+/** Event callback when a margin is clicked, used here for code folding */
+void wxEventClassGen::OnMarginClick(wxStyledTextEvent &event)
+{
+    if (event.GetMargin() == MARGIN_FOLD)
+    {
+        const int lineClick = m_pOutput->LineFromPosition(event.GetPosition());
+        const int levelClick = m_pOutput->GetFoldLevel(lineClick);
+        if ((levelClick & wxSTC_FOLDLEVELHEADERFLAG) > 0)
+        {
+            m_pOutput->ToggleFold(lineClick);
+        }
+    }
 }
 
 void wxEventClassGen::vOnButton(wxCommandEvent &event)

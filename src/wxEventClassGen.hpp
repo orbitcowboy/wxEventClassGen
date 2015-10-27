@@ -25,6 +25,13 @@
 class wxEventClassGen : public wxFrame
 {
     private:
+
+        enum wxStyledTextCtll_constants
+        {
+            MARGIN_LINE_NUMBERS,
+            MARGIN_FOLD
+        };
+
         enum wxIDs
         {
             ID_GENERATE_BTN = wxID_HIGHEST + 1
@@ -49,6 +56,7 @@ class wxEventClassGen : public wxFrame
         void vOnButton(wxCommandEvent&);
         void vOnQuit  (wxCommandEvent&);
         void vOnAbout (wxCommandEvent&);
+        void OnMarginClick(wxStyledTextEvent &event);
 
         void vSetUpMenuBar  (void);
         void vSetUpStatusBar(void);
