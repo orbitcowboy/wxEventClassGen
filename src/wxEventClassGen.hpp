@@ -14,7 +14,6 @@
 /// After generating the C++-class, it can be further extended about customized member variables in order to transfer
 /// information based on wxWidgets events.
 
-
 #include <wx/wx.h>
 #include <wx/aboutdlg.h>
 #include <wx/spinctrl.h>
@@ -34,9 +33,9 @@ class wxEventClassGen : public wxFrame
 
         enum wxIDs
         {
-            ID_GENERATE_BTN = wxID_HIGHEST + 1
-                              , ID_QUIT
-            , ID_ABOUT
+            ID_GENERATE_BTN = wxID_HIGHEST + 1,
+            ID_QUIT,
+            ID_ABOUT
         };
 
     protected:
