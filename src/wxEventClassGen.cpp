@@ -184,8 +184,8 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
     {
         case ID_GENERATE_BTN:
         {
-            std::string strEventName(m_pEventNameTxtCtrl->GetValue().mb_str());
-            if(strEventName.empty())
+            const wxString strEventName(m_pEventNameTxtCtrl->GetValue());
+            if(strEventName.IsEmpty())
             {
                 wxString strMessage(wxT("Please enter the name of the event. Without this information the eventclass cannot be generated."));
                 wxMessageDialog Dialog(  this
@@ -196,7 +196,8 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
                 Dialog.ShowModal();
                 break;
             }
-            std::string strEventTableEntry(m_textCtrl2->GetValue().mb_str());
+
+            const wxString strEventTableEntry(m_textCtrl2->GetValue());
             if(strEventTableEntry.empty())
             {
                 wxString strMessage(wxT("Please enter the event table macro name, e.g.: EVT_CUSTOM. Without this information the eventclass cannot be generated."));
@@ -208,11 +209,13 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
                 Dialog.ShowModal();
                 break;
             }
-            std::string strEventId(wxString::Format(wxT("%i"), m_pEventIdSpinCtrl->GetValue()).mb_str());
+
+            const wxString strEventId(wxString::Format(wxT("%i"), m_pEventIdSpinCtrl->GetValue()));
+
             // Ok, now input is here --> generate the class
-            std::string strResult(
-                "#ifndef __class_" + strEventName + "___\n"
-                "#define __class_" + strEventName + "___\n"
+            const wxString strResult(
+                "#ifndef CLASS" + strEventName.Capitalize() + "__HPP\n"
+                "#define CLASS" + strEventName.Capitalize() + "__HPP\n\n"
                 "#include <wx/wx.h>\n"
                 "#include <wx/event.h>\n\n"
                 "/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
@@ -221,7 +224,7 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
                 "///\\brief This is a custom event class.\n"
                 "///@author martin ettl (ettl.martin78 (at) googlemail (dot) com)\n"
                 "///@date  " + std::string(__DATE__) + "\n"
-                "\n\n"
+                "\n"
                 "class " + strEventName + ": public wxCommandEvent\n"
                 "{\n"
                 "	public:\n"
@@ -262,9 +265,9 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
                 "#define " + strEventTableEntry + "_RANGE(id1,id2, fn) \\\n"
                 "	DECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, id1, id2, \\\n"
                 "							   " + strEventName + "Handler(fn), (wxObject*) NULL ),\n\n"
-                "#endif // __class_" + strEventName + "___\n");
+                "#endif // class_" + strEventName.Capitalize() + "__HPP\n");
             m_pOutput->Clear();
-            m_pOutput->SetValue(wxString(strResult.c_str(), wxConvUTF8));
+            m_pOutput->SetValue(strResult);
             break;
         }
     }
