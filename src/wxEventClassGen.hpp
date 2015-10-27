@@ -26,7 +26,7 @@ class wxEventClassGen : public wxFrame
 {
     private:
 
-        enum wxStyledTextCtll_constants
+        enum wxStyledTextCtrl_constants
         {
             MARGIN_LINE_NUMBERS,
             MARGIN_FOLD
