@@ -143,7 +143,8 @@ LDFLAGS     = $(WXCONFIG_LINKER_CALL) $(SANITIZE)
 LINKER_CALL = $(LINKER) -o $@ $^ $(LDFLAGS)
 
 # Targets
-all: $(BIN_DIR)/$(APP_NAME)
+all: $(BIN_DIR)/$(APP_NAME)\
+     $(BIN_DIR)/TestEventClassGen
 
 # ----------------------------------------------------------------------
 # Linker rules:
@@ -152,10 +153,15 @@ $(BIN_DIR)/$(APP_NAME) : $(OBJ_DIR)/$(APP_NAME).o\
 	    
 	$(LINKER_CALL)
 
+$(BIN_DIR)/TestEventClassGen : $(OBJ_DIR)/TestEventClassGen.o
+	    
+	$(LINKER_CALL)
+
 # ----------------------------------------------------------------------
 # C++ sources:
 SRCS =  $(SRC_DIR)/$(APP_NAME).cpp\
-	    $(SRC_DIR)/Application.cpp
+	    $(SRC_DIR)/Application.cpp\
+		$(SRC_TEST)/TestEventClassGen.cpp 
 
 # ----------------------------------------------------------------------
 # C sources: 
@@ -185,6 +191,8 @@ mrproper: clean
 style:
 	/usr/bin/find $(SRC_DIR) -name "*.cpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
 	/usr/bin/find $(SRC_DIR) -name "*.hpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
+	/usr/bin/find $(SRC_TEST) -name "*.cpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
+	/usr/bin/find $(SRC_TEST) -name "*.hpp" -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
 	/usr/bin/find $(SRC_DIR) -name "*.c"   -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
 	/usr/bin/find $(SRC_DIR) -name "*.h"   -type f -exec astyle --style=ansi -S -N -w -Y -p -C -c {} \;
 
