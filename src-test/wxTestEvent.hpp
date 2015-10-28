@@ -9,35 +9,35 @@ DECLARE_EVENT_TYPE( wxTestCommandEvent, -1 )
 
 
 ///\brief This is a custom event class.
-///@author martin ettl (ettl.martin78 (at) googlemail (dot) com)
+///@author Dr. Martin Ettl
 ///@date  Oct 28 2015
 
 class wxTest: public wxCommandEvent
 {
-    public:
-        /// @brief a custom event id, define as many as you want
-        static const long m_sciwxTestEventId = -1;
+public:
+    /// @brief a custom event id, define as many as you want
+    static const long m_sciwxTestEventId = -1;
 
-        /// Constructor of class wxTest
-        ///
-        /// @param[in] commandType The event type
-        /// @param[in] id          The event id. The default value is 0.
-        wxTest( wxEventType commandType = wxTestCommandEvent, int id = 0 )
-            :  wxCommandEvent(commandType, id)
-        {}
+    /// Constructor of class wxTest
+    ///
+    /// @param[in] commandType The event type
+    /// @param[in] id          The event id. The default value is 0.
+    wxTest( wxEventType commandType = wxTestCommandEvent, int id = 0 )
+        :  wxCommandEvent(commandType, id)
+    {}
 
-        /// @brief Copy constructor
-        ///
-        /// @param[in] event An wxTest-event object.
-        wxTest( const wxTest &event )
-            :  wxCommandEvent(event)
-        {}
+    /// @brief Copy constructor
+    ///
+    /// @param[in] event An wxTest-event object.
+    wxTest( const wxTest &event )
+        :  wxCommandEvent(event)
+    {}
 
-        /// @brief This Clone function is required for sending with wxPostEvent().
-        wxEvent* Clone(void) const
-        {
-            return new wxTest(*this);
-        }
+    /// @brief This Clone function is required for sending with wxPostEvent().
+    wxEvent* Clone(void) const
+    {
+        return new wxTest(*this);
+    }
 };
 
 

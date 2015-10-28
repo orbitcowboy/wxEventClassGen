@@ -18,11 +18,17 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src-test\TestEventClassGen.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src-test\wxTestEvent.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CA90132F-F4A7-4F02-A26F-23C1F5A08F56}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>startwxproject</RootNamespace>
-    <ProjectName>EventClassGen</ProjectName>
+    <ProjectName>TestEventClassGen</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -112,7 +118,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;__WXMSW__;_WINDOWS;__WXDEBUG__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\srcext\simple_tokenize;..\srcext\simple_string_util;..\srcext\simple_string_mathlib;..\srcext\simple_filesystem_util;..\srcext\simple_filelister;..\srcext\asm_style_check;..\src\icon\;.;$(WXWIN)\lib\vc_lib\mswud;$(WXWIN)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\srcext\src;..\srcext\src-test;..\src\icon\;.;$(WXWIN)\lib\vc_lib\mswud;$(WXWIN)\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -152,7 +158,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\srcext\asm_style_check;..\srcext\simple_filelister;..\srcext\simple_filesystem_util;..\srcext\simple_string_mathlib;..\srcext\simple_string_util;..\srcext\simple_tokenize;..\src\icon\;..\src\icon\;.;$(WXWIN)\lib\vc_lib\mswud;$(WXWIN)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\srcext\src;..\srcext\src-test;..\src\icon\;.;$(WXWIN)\lib\vc_lib\mswud;$(WXWIN)\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -164,14 +170,6 @@
       <AdditionalLibraryDirectories>$(WXWIN)\lib\vc_lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\Application.cpp" />
-    <ClCompile Include="..\src\wxEventClassGen.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\Application.hpp" />
-    <ClInclude Include="..\src\wxEventClassGen.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

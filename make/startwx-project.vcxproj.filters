@@ -15,18 +15,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\Application.cpp">
+    <ClCompile Include="..\src-test\TestEventClassGen.cpp">
       <Filter>Quelldateien</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\wxEventClassGen.cpp">
-      <Filter>Headerdateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Application.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\wxEventClassGen.hpp">
+    <ClInclude Include="..\src-test\wxTestEvent.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

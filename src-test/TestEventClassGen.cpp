@@ -15,48 +15,47 @@ const wxEventType wxTestCommandEvent = wxNewEventType();
 
 class MyApp : public wxApp
 {
-    public:
-        virtual bool OnInit();
+public:
+    virtual bool OnInit();
 };
 
 class MyFrame: public wxFrame
 {
-        enum wxIDs
-        {
-            ID_ABOUT = wxID_HIGHEST
-                       , ID_QUIT
-            , ID_TEST
-            , ID_FIRE_EVENT
-        };
+    enum wxIDs
+    {
+        ID_ABOUT = wxID_HIGHEST
+        , ID_QUIT
+        , ID_TEST
+        , ID_FIRE_EVENT
+    };
 
-    public:
+public:
 
-        MyFrame(wxFrame *frame, const wxString& title);
-        ~MyFrame();
+    MyFrame(wxFrame *frame, const wxString& title);
+    ~MyFrame();
 
 
-    protected:
+protected:
 
-        // event handler
-        // -------------
-        void OnQuit(wxCommandEvent &);
-        void OnAbout(wxCommandEvent &);
-        void vOnButton(wxCommandEvent &);
-        void vOnTestEvent(wxTest &);
+    // event handler
+    // -------------
+    void OnQuit(wxCommandEvent &);
+    void OnAbout(wxCommandEvent &);
+    void vOnButton(wxCommandEvent &);
+    void vOnTestEvent(wxTest &);
 
-        // helper functions:
-        // -----------------
-        void vSetUpMenuBar(void);
-        void vSetUpStatusBar(void);
+    // helper functions:
+    // -----------------
+    void vSetUpMenuBar(void);
 
-        wxButton *m_pFireEventBtn;
+    wxButton *m_pFireEventBtn;
 
-        // menu bar stuff
-        wxMenuBar   *m_pMenubar ;
-        wxMenu      *m_pFileMenu;
-        wxMenu      *m_pHelpMenu;
+    // menu bar stuff
+    wxMenuBar   *m_pMenubar ;
+    wxMenu      *m_pFileMenu;
+    wxMenu      *m_pHelpMenu;
 
-        DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()
 };
 
 
@@ -117,9 +116,6 @@ MyFrame::MyFrame(wxFrame *frame, const wxString& title)
     // set up the menu bar
     vSetUpMenuBar();
 
-    // set up the status bar
-    vSetUpStatusBar();
-
     m_pFireEventBtn = new wxButton(this, ID_FIRE_EVENT, wxT("Fire Event"));
 
 }
@@ -137,13 +133,13 @@ void MyFrame::vOnTestEvent(wxTest& event)
 {
     switch(event.GetId())
     {
-        case ID_TEST:
-        {
-            wxMessageBox( wxT("Catched custom event") );
-            break;
-        }
-        default:
-            std::cerr << "### internal error in  MyFrame::vOnTestEvent() , please report\n";
+    case ID_TEST:
+    {
+        wxMessageBox( wxT("Catched custom event") );
+        break;
+    }
+    default:
+        std::cerr << "### internal error in  MyFrame::vOnTestEvent() , please report\n";
     }
 }
 
@@ -151,23 +147,23 @@ void MyFrame::vOnButton(wxCommandEvent& event)
 {
     switch(event.GetId())
     {
-        case ID_FIRE_EVENT:
-        {
-            wxTest TestEvent;
-            TestEvent.SetId(ID_TEST);
-            wxPostEvent(this, TestEvent);
-            break;
-        }
-        default:
-            std::cerr << "### internal error in  MyFrame::vOnButton() , please report\n";
+    case ID_FIRE_EVENT:
+    {
+        wxTest TestEvent;
+        TestEvent.SetId(ID_TEST);
+        wxPostEvent(this, TestEvent);
+        break;
+    }
+    default:
+        std::cerr << "### internal error in  MyFrame::vOnButton() , please report\n";
     }
 }
 
 void MyFrame::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxAboutDialogInfo AboutDialogInfo;
-    AboutDialogInfo.AddDeveloper(wxT("Ettl Martin Dipl. Inf (FH)\nTechnical University of Munich\nResearch Department Satellite Geodesy\n-Fundamentalstation Wettzell -\nSackenrieder Str.25\nD-93444 Bad Koetzting\nEmail:ettl@fs.wettzell.de\n "));
-    AboutDialogInfo.SetDescription(wxT("wxTestEventClassGen Demo\nby\nEttl Martin"));
+    AboutDialogInfo.AddDeveloper(wxT("Dr. Martin Ettl"));
+    AboutDialogInfo.SetDescription(wxT("TestEventClassGen Demo\nby\nDr. Martin Ettl"));
     AboutDialogInfo.SetName(wxT("wxTestEventClassGen"));
     AboutDialogInfo.SetVersion(wxT(__DATE__));
 
@@ -197,15 +193,4 @@ void MyFrame::vSetUpMenuBar(void)
 #endif // wxUSE_MENUS
 }
 
-void MyFrame::vSetUpStatusBar(void)
-{
-#if wxUSE_STATUSBAR
-
-    // create a status bar with some information about the used wxWidgets version
-    CreateStatusBar(2);
-    SetStatusText(_("Hello wxWidgets user !"), 0);
-    SetStatusText(wxbuildinfo(short_f), 1);
-
-#endif // wxUSE_STATUSBAR   
-}
 

@@ -193,94 +193,94 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
 {
     switch(event.GetId())
     {
-        case ID_GENERATE_BTN:
+    case ID_GENERATE_BTN:
+    {
+        const wxString strEventName(m_pEventNameTxtCtrl->GetValue());
+        if(strEventName.IsEmpty())
         {
-            const wxString strEventName(m_pEventNameTxtCtrl->GetValue());
-            if(strEventName.IsEmpty())
-            {
-                wxString strMessage(wxT("Please enter the name of the event. Without this information the eventclass cannot be generated."));
-                wxMessageDialog Dialog(  this
-                                         , strMessage
-                                         , wxT("Missing input")
-                                         , wxICON_HAND
-                                         , wxDefaultPosition);
-                Dialog.ShowModal();
-                break;
-            }
-
-            const wxString strEventTableEntry(m_pEventTableEntryNameTxtCtrl->GetValue());
-            if(strEventTableEntry.empty())
-            {
-                wxString strMessage(wxT("Please enter the event table macro name, e.g.: EVT_CUSTOM. Without this information the eventclass cannot be generated."));
-                wxMessageDialog Dialog(  this
-                                         , strMessage
-                                         , wxT("Missing input")
-                                         , wxICON_HAND
-                                         , wxDefaultPosition);
-                Dialog.ShowModal();
-                break;
-            }
-
-            const wxString strEventId(wxString::Format(wxT("%i"), m_pEventIdSpinCtrl->GetValue()));
-
-            // Ok, now input is here --> generate the class
-            const wxString strResult(
-                "#ifndef CLASS" + strEventName.Upper() + "__HPP\n"
-                "#define CLASS" + strEventName.Upper() + "__HPP\n\n"
-                "#include <wx/wx.h>\n"
-                "#include <wx/event.h>\n\n"
-                "/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
-                "DECLARE_EVENT_TYPE( " + strEventName + "CommandEvent, -1 )\n"
-                "\n\n"
-                "///\\brief This is a custom event class.\n"
-                "///@author martin ettl (ettl.martin78 (at) googlemail (dot) com)\n"
-                "///@date  " + std::string(__DATE__) + "\n"
-                "\n"
-                "class " + strEventName + ": public wxCommandEvent\n"
-                "{\n"
-                "	public:\n"
-                "		/// @brief a custom event id, define as many as you want\n"
-                "		static const long m_sci" + strEventName + "EventId = " + strEventId + ";\n\n"
-                "		/// Constructor of class " + strEventName + "\n"
-                "		///\n"
-                "		/// @param[in] commandType The event type\n"
-                "		/// @param[in] id  		   The event id. The default value is 0.\n"
-                "		" + strEventName + "( wxEventType commandType = " + strEventName + "CommandEvent, int id = 0 )\n"
-                "			:  wxCommandEvent(commandType, id)\n"
-                "		{}\n\n"
-                "		/// @brief Copy constructor \n"
-                "		///\n"
-                "		/// @param[in] event An " + strEventName + "-event object.\n"
-                "		" + strEventName + "( const " + strEventName + " &event )\n"
-                "			:  wxCommandEvent(event)\n"
-                "		{}\n\n"
-                "		/// @brief This Clone function is required for sending with wxPostEvent().\n"
-                "		wxEvent* Clone(void) const\n"
-                "		{\n"
-                "			return new " + strEventName + "(*this);\n"
-                "		}\n"
-                "};\n\n\n"
-                "typedef void (wxEvtHandler::*" + strEventName + "EventFunction)(" + strEventName + " &);\n\n"
-                "// This #define simplifies the one below, and makes the syntax less\n"
-                "// ugly if you want to use Connect() instead of an event table.\n"
-                "#define " + strEventName + "Handler(func) \\\n"
-                "	(wxObjectEventFunction)(wxEventFunction)(wxCommandEventFunction)\\\n"
-                "	wxStaticCastEvent(" + strEventName + "EventFunction, &func)\n\n\n"
-                "// Define the event table entry. Yes, it really *does* end in a comma.\n"
-                "#define " + strEventTableEntry + "(id, fn)\\\n"
-                "	DECLARE_EVENT_TABLE_ENTRY(" + strEventName + "CommandEvent, id, wxID_ANY,\\\n"
-                "							 (wxObjectEventFunction)(wxEventFunction)\\\n"
-                "							 (wxCommandEventFunction) wxStaticCastEvent(\\\n"
-                "							" + strEventName + "EventFunction, &fn ), (wxObject*) NULL ),\n\n\n"
-                "// Optionally, you can do a similar #define for EVT_" + strEventTableEntry + "_RANGE.\n"
-                "#define " + strEventTableEntry + "_RANGE(id1,id2, fn) \\\n"
-                "	DECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, id1, id2, \\\n"
-                "							   " + strEventName + "Handler(fn), (wxObject*) NULL ),\n\n"
-                "#endif // class_" + strEventName.Upper() + "__HPP\n");
-            m_pOutput->Clear();
-            m_pOutput->SetValue(strResult);
+            wxString strMessage(wxT("Please enter the name of the event. Without this information the eventclass cannot be generated."));
+            wxMessageDialog Dialog(  this
+                                     , strMessage
+                                     , wxT("Missing input")
+                                     , wxICON_HAND
+                                     , wxDefaultPosition);
+            Dialog.ShowModal();
             break;
         }
+
+        const wxString strEventTableEntry(m_pEventTableEntryNameTxtCtrl->GetValue());
+        if(strEventTableEntry.empty())
+        {
+            wxString strMessage(wxT("Please enter the event table macro name, e.g.: EVT_CUSTOM. Without this information the eventclass cannot be generated."));
+            wxMessageDialog Dialog(  this
+                                     , strMessage
+                                     , wxT("Missing input")
+                                     , wxICON_HAND
+                                     , wxDefaultPosition);
+            Dialog.ShowModal();
+            break;
+        }
+
+        const wxString strEventId(wxString::Format(wxT("%i"), m_pEventIdSpinCtrl->GetValue()));
+
+        // Ok, now input is here --> generate the class
+        const wxString strResult(
+            "#ifndef CLASS" + strEventName.Upper() + "__HPP\n"
+            "#define CLASS" + strEventName.Upper() + "__HPP\n\n"
+            "#include <wx/wx.h>\n"
+            "#include <wx/event.h>\n\n"
+            "/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
+            "DECLARE_EVENT_TYPE( " + strEventName + "CommandEvent, -1 )\n"
+            "\n\n"
+            "///\\brief This is a custom event class.\n"
+            "///@author martin ettl (ettl.martin78 (at) googlemail (dot) com)\n"
+            "///@date  " + std::string(__DATE__) + "\n"
+            "\n"
+            "class " + strEventName + ": public wxCommandEvent\n"
+            "{\n"
+            "	public:\n"
+            "		/// @brief a custom event id, define as many as you want\n"
+            "		static const long m_sci" + strEventName + "EventId = " + strEventId + ";\n\n"
+            "		/// Constructor of class " + strEventName + "\n"
+            "		///\n"
+            "		/// @param[in] commandType The event type\n"
+            "		/// @param[in] id  		   The event id. The default value is 0.\n"
+            "		" + strEventName + "( wxEventType commandType = " + strEventName + "CommandEvent, int id = 0 )\n"
+            "			:  wxCommandEvent(commandType, id)\n"
+            "		{}\n\n"
+            "		/// @brief Copy constructor \n"
+            "		///\n"
+            "		/// @param[in] event An " + strEventName + "-event object.\n"
+            "		" + strEventName + "( const " + strEventName + " &event )\n"
+            "			:  wxCommandEvent(event)\n"
+            "		{}\n\n"
+            "		/// @brief This Clone function is required for sending with wxPostEvent().\n"
+            "		wxEvent* Clone(void) const\n"
+            "		{\n"
+            "			return new " + strEventName + "(*this);\n"
+            "		}\n"
+            "};\n\n\n"
+            "typedef void (wxEvtHandler::*" + strEventName + "EventFunction)(" + strEventName + " &);\n\n"
+            "// This #define simplifies the one below, and makes the syntax less\n"
+            "// ugly if you want to use Connect() instead of an event table.\n"
+            "#define " + strEventName + "Handler(func) \\\n"
+            "	(wxObjectEventFunction)(wxEventFunction)(wxCommandEventFunction)\\\n"
+            "	wxStaticCastEvent(" + strEventName + "EventFunction, &func)\n\n\n"
+            "// Define the event table entry. Yes, it really *does* end in a comma.\n"
+            "#define " + strEventTableEntry + "(id, fn)\\\n"
+            "	DECLARE_EVENT_TABLE_ENTRY(" + strEventName + "CommandEvent, id, wxID_ANY,\\\n"
+            "							 (wxObjectEventFunction)(wxEventFunction)\\\n"
+            "							 (wxCommandEventFunction) wxStaticCastEvent(\\\n"
+            "							" + strEventName + "EventFunction, &fn ), (wxObject*) NULL ),\n\n\n"
+            "// Optionally, you can do a similar #define for EVT_" + strEventTableEntry + "_RANGE.\n"
+            "#define " + strEventTableEntry + "_RANGE(id1,id2, fn) \\\n"
+            "	DECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, id1, id2, \\\n"
+            "							   " + strEventName + "Handler(fn), (wxObject*) NULL ),\n\n"
+            "#endif // class_" + strEventName.Upper() + "__HPP\n");
+        m_pOutput->Clear();
+        m_pOutput->SetValue(strResult);
+        break;
+    }
     }
 }
 
@@ -313,7 +313,7 @@ void wxEventClassGen::vSetUpStatusBar(void)
     CreateStatusBar(2);
     SetStatusText(wxEmptyString, 0);
     SetStatusText(wxVERSION_STRING, 1);
-#endif // wxUSE_STATUSBAR   
+#endif // wxUSE_STATUSBAR
 }
 
 void wxEventClassGen::vOnQuit(wxCommandEvent& WXUNUSED(event))
