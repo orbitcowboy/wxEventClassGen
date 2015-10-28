@@ -15,47 +15,47 @@ const wxEventType wxTestCommandEvent = wxNewEventType();
 
 class MyApp : public wxApp
 {
-public:
-    virtual bool OnInit();
+    public:
+        virtual bool OnInit();
 };
 
 class MyFrame: public wxFrame
 {
-    enum wxIDs
-    {
-        ID_ABOUT = wxID_HIGHEST
-        , ID_QUIT
-        , ID_TEST
-        , ID_FIRE_EVENT
-    };
+        enum wxIDs
+        {
+            ID_ABOUT = wxID_HIGHEST
+                       , ID_QUIT
+            , ID_TEST
+            , ID_FIRE_EVENT
+        };
 
-public:
+    public:
 
-    MyFrame(wxFrame *frame, const wxString& title);
-    ~MyFrame();
+        MyFrame(wxFrame *frame, const wxString& title);
+        ~MyFrame();
 
 
-protected:
+    protected:
 
-    // event handler
-    // -------------
-    void OnQuit(wxCommandEvent &);
-    void OnAbout(wxCommandEvent &);
-    void vOnButton(wxCommandEvent &);
-    void vOnTestEvent(wxTest &);
+        // event handler
+        // -------------
+        void OnQuit(wxCommandEvent &);
+        void OnAbout(wxCommandEvent &);
+        void vOnButton(wxCommandEvent &);
+        void vOnTestEvent(wxTest &);
 
-    // helper functions:
-    // -----------------
-    void vSetUpMenuBar(void);
+        // helper functions:
+        // -----------------
+        void vSetUpMenuBar(void);
 
-    wxButton *m_pFireEventBtn;
+        wxButton *m_pFireEventBtn;
 
-    // menu bar stuff
-    wxMenuBar   *m_pMenubar ;
-    wxMenu      *m_pFileMenu;
-    wxMenu      *m_pHelpMenu;
+        // menu bar stuff
+        wxMenuBar   *m_pMenubar ;
+        wxMenu      *m_pFileMenu;
+        wxMenu      *m_pHelpMenu;
 
-    DECLARE_EVENT_TABLE()
+        DECLARE_EVENT_TABLE()
 };
 
 
@@ -133,13 +133,13 @@ void MyFrame::vOnTestEvent(wxTest& event)
 {
     switch(event.GetId())
     {
-    case ID_TEST:
-    {
-        wxMessageBox( wxT("Catched custom event") );
-        break;
-    }
-    default:
-        std::cerr << "### internal error in  MyFrame::vOnTestEvent() , please report\n";
+        case ID_TEST:
+        {
+            wxMessageBox( wxT("Catched custom event") );
+            break;
+        }
+        default:
+            std::cerr << "### internal error in  MyFrame::vOnTestEvent() , please report\n";
     }
 }
 
@@ -147,15 +147,15 @@ void MyFrame::vOnButton(wxCommandEvent& event)
 {
     switch(event.GetId())
     {
-    case ID_FIRE_EVENT:
-    {
-        wxTest TestEvent;
-        TestEvent.SetId(ID_TEST);
-        wxPostEvent(this, TestEvent);
-        break;
-    }
-    default:
-        std::cerr << "### internal error in  MyFrame::vOnButton() , please report\n";
+        case ID_FIRE_EVENT:
+        {
+            wxTest TestEvent;
+            TestEvent.SetId(ID_TEST);
+            wxPostEvent(this, TestEvent);
+            break;
+        }
+        default:
+            std::cerr << "### internal error in  MyFrame::vOnButton() , please report\n";
     }
 }
 
