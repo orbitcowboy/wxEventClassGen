@@ -113,7 +113,7 @@ endif
 # C++ compiler settings:
 CXX 		= g++
 CXX_INCLUDE	= -I$(SRC_DIR) -I$(SRC_EXT_DIR) -I$(SRC_TEST) -I$(ICON_DIR)
-CXX_OPT		= -O3 -flto
+CXX_OPT		= -O3 -std=c++11
 CXX_DEBUG	= $(SANITIZE)
 CXX_WFLAGS	= -Wno-write-strings -Wno-sign-compare -Wno-long-long -Wno-variadic-macros -fno-strict-aliasing -W -Wall -Wunused -Wshadow \
 			  -Wextra -ansi -pedantic -Wno-deprecated-declarations #-Wconversion -Wsign-conversion 
