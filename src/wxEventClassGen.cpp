@@ -284,7 +284,7 @@ void wxEventClassGen::OnButton(wxCommandEvent &event)
 				"/// @date  " + std::string(__DATE__) + "\n"
 				"\n"
 				"/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
-				"DECLARE_EVENT_TYPE( " + strEventName + "CommandEvent, -1 )\n"
+				"DECLARE_EVENT_TYPE(" + strEventName + "CommandEvent, " + strEventId + ")\n"
                 "\n"
                 "class " + strEventName + ": public wxCommandEvent\n"
                 "{\n"
