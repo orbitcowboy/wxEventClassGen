@@ -262,8 +262,15 @@ void wxEventClassGen::OnButton(wxCommandEvent &event)
                 break;
             }
 
-			m_outputNotebook->SetPageText(0, strEventName+".hpp");
-			m_outputNotebook->SetPageText(1, strEventName+".cpp");
+			// Update tab names
+			if (!m_outputNotebook->SetPageText(/*hppTabId=*/0, strEventName + ".hpp"))
+			{
+				wxLogWarning("%s", "Unable to set hpp-tab name.");
+			}
+			if(!m_outputNotebook->SetPageText(/*cppTabId=*/1, strEventName+".cpp"))
+			{
+				wxLogWarning("%s", "Unable to set cpp-tab name.");
+			}
             const wxString strEventId(wxString::Format(wxT("%i"), m_pEventIdSpinCtrl->GetValue()));
 
             // Ok, now input is here --> generate the class
@@ -272,34 +279,40 @@ void wxEventClassGen::OnButton(wxCommandEvent &event)
                 "#define CLASS" + strEventName.Upper() + "__HPP\n\n"
                 "#include <wx/wx.h>\n"
                 "#include <wx/event.h>\n\n"
-                "/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
 				"/// @brief This is a custom event class.\n"
 				"/// @author Dr. Martin Ettl\n"
 				"/// @date  " + std::string(__DATE__) + "\n"
 				"\n"
+				"/// @brief Declaration of an custom event type, this is the wxWidgets way to predefine an event class.\n"
 				"DECLARE_EVENT_TYPE( " + strEventName + "CommandEvent, -1 )\n"
-                "\n\n"
+                "\n"
                 "class " + strEventName + ": public wxCommandEvent\n"
                 "{\n"
                 "	public:\n"
                 "		/// @brief a custom event id, define as many as you want\n"
-                "		static const long m_sci" + strEventName + "EventId = " + strEventId + ";\n\n"
+                "		static const long m_sci" + strEventName + "EventId = " + strEventId + ";\n"
+				"\n"
                 "		/// Constructor of class " + strEventName + "\n"
                 "		/// @param[in] commandType The event type\n"
-                "		/// @param[in] id  		   The event id. The default value is 0.\n"
-                "		" + strEventName + "( wxEventType commandType = " + strEventName + "CommandEvent, int id = 0 );\n\n"
+                "		/// @param[in] id          The event id. The default value is 0.\n"
+                "		" + strEventName + "(wxEventType commandType = " + strEventName + "CommandEvent, int id = 0);\n"
+				"\n"
                 "		/// @brief Copy constructor \n"
                 "		/// @param[in] event An " + strEventName + "-event object.\n"
-                "		" + strEventName + "( const " + strEventName + " &event );\n\n"
+                "		" + strEventName + "(const " + strEventName + " &event );\n"
+				"\n"
                 "		/// @brief This Clone function is required for sending with wxPostEvent().\n"
                 "		wxEvent* Clone(void) const;\n"
-                "};\n\n"
+                "};\n"
+				"\n"
                 "typedef void (wxEvtHandler::*" + strEventName + "EventFunction)(" + strEventName + " &);\n"
-                "#define " + strEventName + "Handler(func) wxEVENT_HANDLER_CAST(" + strEventName + "EventFunction, func)\n\n"
+                "#define " + strEventName + "Handler(func) wxEVENT_HANDLER_CAST(" + strEventName + "EventFunction, func)\n"
+				"\n"
 				"// Define the event table entry. Yes, it really *does* end in a comma.\n"
                 "#define " + strEventTableEntry + "(id, fn) wxDECLARE_EVENT_TABLE_ENTRY(" + strEventName + "CommandEvent, (id), wxID_ANY, (wxObjectEventFunction)(wxEventFunction) wxEVENT_HANDLER_CAST( "+ strEventName + "EventFunction, fn ), (wxObject*) NULL ),\n"
                 "// Optionally, you can do a similar #define for EVT_" + strEventTableEntry + "_RANGE.\n"
-                "#define " + strEventTableEntry + "_RANGE(id1, id2, fn)	wxDECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, (id1), (id2), " + strEventName + "Handler(fn), (wxObject*) NULL ),\n\n"
+                "#define " + strEventTableEntry + "_RANGE(id1, id2, fn)	wxDECLARE_EVENT_TABLE_ENTRY( " + strEventName + "CommandEvent, (id1), (id2), " + strEventName + "Handler(fn), (wxObject*) NULL ),\n"
+				"\n"
 				"/** @}*/\n"
                 "#endif // class_" + strEventName.Upper() + "__HPP\n");
 			m_outputHpp->Clear();
@@ -308,14 +321,17 @@ void wxEventClassGen::OnButton(wxCommandEvent &event)
 			// Generate implementation code
 			m_outputCpp->Clear();
 			wxString cppCode = "#include \""+strEventName+".hpp\"\n";
-			cppCode += "\n\n";
-			cppCode +="const wxEventType " + strEventName + "CommandEvent = wxNewEventType();\n\n";
-			cppCode += strEventName + "::" + strEventName + "( wxEventType commandType, int id)\n"
+			cppCode += "\n";
+			cppCode +="const wxEventType " + strEventName + "CommandEvent = wxNewEventType();\n";
+			cppCode += "\n";
+			cppCode += strEventName + "::" + strEventName + "(wxEventType commandType, int id)\n"
 				     ": wxCommandEvent(commandType, id)\n"
-				     "{}\n\n";
-			cppCode += strEventName + "::" + strEventName + "( const " + strEventName + " &event )\n"
+				     "{}\n";
+			cppCode += "\n";
+			cppCode += strEventName + "::" + strEventName + "(const " + strEventName + " &event)\n"
 				      ": wxCommandEvent(event)\n"
-				      "{}\n\n";
+				      "{}\n";
+			cppCode += "\n";
 			cppCode += "wxEvent* " + strEventName + "::Clone(void) const\n"
 				       "{\n"
 				       "	return new " + strEventName + "(*this);\n"
