@@ -18,6 +18,7 @@
 #include <wx/aboutdlg.h>
 #include <wx/spinctrl.h>
 #include <wx/config.h>
+#include <wx/notebook.h>
 
 /// Use wxStyledTextCtrl to display the generated source code (https://wiki.wxwidgets.org/WxStyledTextCtrl).
 #include <wx/stc/stc.h>
@@ -40,6 +41,8 @@ protected:
         enum wxIDs
         {
             ID_GENERATE_BTN = wxID_HIGHEST + 1,
+			ID_CPP_CODE,
+			ID_HPP_CODE,
             ID_QUIT,
             ID_ABOUT
         };
@@ -48,7 +51,13 @@ protected:
         wxStaticText     * m_staticText2;
         wxTextCtrl       * m_pEventTableEntryNameTxtCtrl;
         wxBitmapButton   * m_pGenerateEventBtn;
-        wxStyledTextCtrl * m_pOutput;
+
+		wxNotebook* m_outputNotebook;
+		wxPanel* m_outputHppPanel;
+		wxStyledTextCtrl* m_outputHpp;
+		wxPanel* m_outputCppPanel;
+		wxStyledTextCtrl* m_outputCpp;
+
         wxStaticText     * m_staticText3;
         wxSpinCtrl       * m_pEventIdSpinCtrl;
         wxMenuBar        * m_pMenubar;
