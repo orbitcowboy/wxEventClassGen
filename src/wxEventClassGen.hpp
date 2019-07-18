@@ -1,11 +1,11 @@
 #ifndef __wxEventClassGen_header__
-#define __wxEventClassGen_header__
+#define WX_EVENT_CLASS_GEN_HPP
 
 /// @author Dr. Martin Ettl
 /// @date   2015-10-20
 
 /// @brief This is a wxEventClass generator.
-/// In simpilifies the creation of event classes, by generating a workable and customized event class.
+/// In simplifies the creation of event classes, by generating a workable and customized event class.
 /// Before the generation can be started, the user must enter two values. The name of the EventClass and
 /// the EVT_-Macro name. For instance:
 ///
@@ -24,7 +24,12 @@
 
 class wxEventClassGen : public wxFrame
 {
-    private:
+    public:
+
+	wxEventClassGen(wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize(1200, 800), long style = wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL);
+	~wxEventClassGen(void);
+
+protected:
 
         enum wxStyledTextCtrl_constants
         {
@@ -39,8 +44,6 @@ class wxEventClassGen : public wxFrame
             ID_ABOUT
         };
 
-    protected:
-
         wxTextCtrl       * m_pEventNameTxtCtrl;
         wxStaticText     * m_staticText2;
         wxTextCtrl       * m_pEventTableEntryNameTxtCtrl;
@@ -53,24 +56,16 @@ class wxEventClassGen : public wxFrame
         wxMenu           * m_pHelpMenu;
         wxConfig         * m_config;
 
-        void vOnButton(wxCommandEvent&);
-        void vOnQuit  (wxCommandEvent&);
-        void vOnAbout (wxCommandEvent&);
+        void OnButton(wxCommandEvent&);
+        void OnQuit  (wxCommandEvent&);
+        void OnAbout (wxCommandEvent&);
         void OnMarginClick(wxStyledTextEvent &event);
-
-        void vSetUpMenuBar  (void);
-        void vSetUpStatusBar(void);
-
+        void SetUpMenuBar(void);
+        void SetUpStatusBar(void);
         void SaveCurrentProgramSettings(void);
         void RestoreCurrentProgramSettings(void);
-
-    public:
-
-        wxEventClassGen( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxEmptyString, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 1200, 800 ), long style = wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL );
-        ~wxEventClassGen();
-
+		static void ConfigureTextStyle(wxStyledTextCtrl* const styledTextCtrl);
         DECLARE_EVENT_TABLE()
-
 };
 
 #endif //__wxEventClassGen_header__

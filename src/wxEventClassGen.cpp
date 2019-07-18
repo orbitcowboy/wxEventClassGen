@@ -8,144 +8,68 @@
 
 // wxEvent Table
 BEGIN_EVENT_TABLE(wxEventClassGen, wxFrame)
-    EVT_BUTTON(ID_GENERATE_BTN, wxEventClassGen::vOnButton)
-    EVT_MENU(ID_ABOUT         , wxEventClassGen::vOnAbout)
-    EVT_MENU(ID_QUIT          , wxEventClassGen::vOnQuit)
+    EVT_BUTTON(ID_GENERATE_BTN, wxEventClassGen::OnButton)
+    EVT_MENU(ID_ABOUT, wxEventClassGen::OnAbout)
+    EVT_MENU(ID_QUIT, wxEventClassGen::OnQuit)
 END_EVENT_TABLE()
 
 wxEventClassGen::wxEventClassGen( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style )
     : wxFrame( parent, id, title, pos, size, style )
 {
     // set up the menu bar
-    vSetUpMenuBar();
+    SetUpMenuBar();
 
     // set up the status bar
-    vSetUpStatusBar();
+    SetUpStatusBar();
 
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    wxStaticBoxSizer* bSizer1 = new wxStaticBoxSizer( wxVERTICAL, this, wxT(""));
+    wxStaticBoxSizer * const topSizer = new wxStaticBoxSizer( wxVERTICAL, this, wxT(""));
 
-    wxBoxSizer *userInputSizer = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer * const userInputSizer = new wxBoxSizer(wxHORIZONTAL);
 
     // Name of event
-    wxStaticBoxSizer* bSizer2 = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Name of event:") );
+    wxStaticBoxSizer * const eventNameSizer = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Name of event") );
     m_pEventNameTxtCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer2->Add( m_pEventNameTxtCtrl, 1, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-    userInputSizer->Add( bSizer2, 1, wxEXPAND, 5 );
+    eventNameSizer->Add( m_pEventNameTxtCtrl, 1, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    userInputSizer->Add( eventNameSizer, 1, wxEXPAND, 5 );
 
-    // Eventtable entry
-    wxStaticBoxSizer* bSizer3 = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Name of eventtable entry:") );
+    // Event-table entry
+    wxStaticBoxSizer * const eventTableMacroNameSizer = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Name of event table macro") );
     m_pEventTableEntryNameTxtCtrl = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer3->Add( m_pEventTableEntryNameTxtCtrl, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    userInputSizer->Add( bSizer3, 1, wxEXPAND, 5 );
+    eventTableMacroNameSizer->Add( m_pEventTableEntryNameTxtCtrl, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    userInputSizer->Add( eventTableMacroNameSizer, 1, wxEXPAND, 5 );
 
     // Event id
-    wxStaticBoxSizer* bSizer4 = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Event id:") );
+    wxStaticBoxSizer* const eventIdSizer = new wxStaticBoxSizer( wxHORIZONTAL, this, wxT("Event ID") );
     m_pEventIdSpinCtrl = new wxSpinCtrl(this, wxID_ANY, wxT("-1"), wxDefaultPosition, wxSize(150, -1), wxSP_ARROW_KEYS, -10000, +10000, -1);
-    bSizer4->Add( m_pEventIdSpinCtrl, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    userInputSizer->Add( bSizer4, 0, wxEXPAND, 5 );
+    eventIdSizer->Add( m_pEventIdSpinCtrl, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
+    userInputSizer->Add( eventIdSizer, 0, wxEXPAND, 5 );
 
     // Generate button
+	wxStaticBoxSizer * const buttonSizer = new wxStaticBoxSizer(wxHORIZONTAL, this, wxEmptyString);
     m_pGenerateEventBtn = new wxBitmapButton( this, ID_GENERATE_BTN, wxBitmap(gear_xpm), wxDefaultPosition);
-    userInputSizer->Add( m_pGenerateEventBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    bSizer1->Add(userInputSizer, 1, wxALL | wxEXPAND, 5);
+	buttonSizer->Add(m_pGenerateEventBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5); 
+    userInputSizer->Add(buttonSizer, 0, wxEXPAND, 5);
+
+    topSizer->Add(userInputSizer, 1, wxALL | wxEXPAND, 5);
 
     // Output
-    wxBoxSizer* bSizer5;
-    bSizer5 = new wxBoxSizer( wxVERTICAL );
-    wxStaticBoxSizer* sbSizer3;
-    sbSizer3 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Output") ), wxVERTICAL );
+	wxStaticBoxSizer* const outputSizer = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Output") ), wxVERTICAL );
     m_pOutput = new wxStyledTextCtrl( this, wxID_ANY );
+	// Connect the event handler for code folding
+	m_pOutput->Connect(wxEVT_STC_MARGINCLICK, wxStyledTextEventHandler(wxEventClassGen::OnMarginClick), NULL, this);
+	ConfigureTextStyle(m_pOutput);
+    outputSizer->Add( m_pOutput, 5, wxALL | wxEXPAND, 5 );
+    topSizer->Add(outputSizer, 15, wxEXPAND, 5 );
 
-    m_pOutput->StyleClearAll();
-    m_pOutput->SetLexer(wxSTC_LEX_CPP);
-
-    m_pOutput->SetMarginWidth (MARGIN_LINE_NUMBERS, 50);
-    m_pOutput->StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (75, 75, 75) );
-    m_pOutput->StyleSetBackground (wxSTC_STYLE_LINENUMBER, wxColour (220, 220, 220));
-    m_pOutput->SetMarginType (MARGIN_LINE_NUMBERS, wxSTC_MARGIN_NUMBER);
-
-
-    // ---- Enable code folding
-    m_pOutput->SetMarginType (MARGIN_FOLD, wxSTC_MARGIN_SYMBOL);
-    m_pOutput->SetMarginWidth(MARGIN_FOLD, 15);
-    m_pOutput->SetMarginMask (MARGIN_FOLD, wxSTC_MASK_FOLDERS);
-    m_pOutput->StyleSetBackground(MARGIN_FOLD, wxColor(200, 200, 200) );
-    m_pOutput->SetMarginSensitive(MARGIN_FOLD, true);
-
-    // Properties found from http://www.scintilla.org/SciTEDoc.html
-    m_pOutput->SetProperty (wxT("fold"),         wxT("1") );
-    m_pOutput->SetProperty (wxT("fold.comment"), wxT("1") );
-    m_pOutput->SetProperty (wxT("fold.compact"), wxT("1") );
-
-    wxColor grey( 100, 100, 100 );
-    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDER, wxSTC_MARK_ARROW );
-    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDER, grey);
-    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDER, grey);
-
-    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_ARROWDOWN);
-    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDEROPEN, grey);
-    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDEROPEN, grey);
-
-    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_EMPTY);
-    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDERSUB, grey);
-    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDERSUB, grey);
-
-    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDEREND,     wxSTC_MARK_ARROW);
-    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDEREND, grey);
-    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDEREND, _T("WHITE"));
-
-    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_ARROWDOWN);
-    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDEROPENMID, grey);
-    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDEROPENMID, _T("WHITE"));
-
-    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_EMPTY);
-    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDERMIDTAIL, grey);
-    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDERMIDTAIL, grey);
-
-    m_pOutput->MarkerDefine (wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_EMPTY);
-    m_pOutput->MarkerSetForeground (wxSTC_MARKNUM_FOLDERTAIL, grey);
-    m_pOutput->MarkerSetBackground (wxSTC_MARKNUM_FOLDERTAIL, grey);
-
-    // Connect the event handler for code folding
-    m_pOutput->Connect(wxEVT_STC_MARGINCLICK, wxStyledTextEventHandler(wxEventClassGen::OnMarginClick), NULL, this);
-
-    // ---- End of code folding part
-
-    m_pOutput->SetWrapMode (wxSTC_WRAP_WORD); // other choice is wxSCI_WRAP_NONE
-
-    m_pOutput->StyleSetForeground (wxSTC_C_STRING,            wxColour(150, 0, 0));
-    m_pOutput->StyleSetForeground (wxSTC_C_PREPROCESSOR,      wxColour(165, 105, 0));
-    m_pOutput->StyleSetForeground (wxSTC_C_IDENTIFIER,        wxColour(40, 0, 60));
-    m_pOutput->StyleSetForeground (wxSTC_C_NUMBER,            wxColour(0, 150, 0));
-    m_pOutput->StyleSetForeground (wxSTC_C_CHARACTER,         wxColour(150, 0, 0));
-    m_pOutput->StyleSetForeground (wxSTC_C_WORD,              wxColour(0, 0, 150));
-    m_pOutput->StyleSetForeground (wxSTC_C_WORD2,             wxColour(0, 150, 0));
-    m_pOutput->StyleSetForeground (wxSTC_C_COMMENT,           wxColour(150, 150, 150));
-    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTLINE,       wxColour(150, 150, 150));
-    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTDOC,        wxColour(150, 150, 150));
-    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTDOCKEYWORD, wxColour(0, 0, 200));
-    m_pOutput->StyleSetForeground (wxSTC_C_COMMENTDOCKEYWORDERROR, wxColour(0, 0, 200));
-    m_pOutput->StyleSetBold(wxSTC_C_WORD, true);
-    m_pOutput->StyleSetBold(wxSTC_C_WORD2, true);
-    m_pOutput->StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
-
-    // Configure keyword highlighting
-    m_pOutput->SetKeyWords(0, wxT("return for while break continue if switch define"));
-    m_pOutput->SetKeyWords(1, wxT("const int float void char double long"));
-
-    sbSizer3->Add( m_pOutput, 5, wxALL | wxEXPAND, 5 );
-    bSizer5->Add( sbSizer3, 5, wxEXPAND, 5 );
-    bSizer1->Add( bSizer5, 15, wxEXPAND, 5 );
-
-    this->SetSizer( bSizer1 );
+    this->SetSizer( topSizer );
     this->Layout();
 
     RestoreCurrentProgramSettings();
 }
 
-wxEventClassGen::~wxEventClassGen()
+wxEventClassGen::~wxEventClassGen(void)
 {
     SaveCurrentProgramSettings();
 }
@@ -175,6 +99,85 @@ void wxEventClassGen::RestoreCurrentProgramSettings(void)
     }
 }
 
+void wxEventClassGen::ConfigureTextStyle(wxStyledTextCtrl* const styledTextCtrl)
+{
+	if (!styledTextCtrl)
+		return;
+	styledTextCtrl->StyleClearAll();
+	styledTextCtrl->SetLexer(wxSTC_LEX_CPP);
+
+	styledTextCtrl->SetMarginWidth(MARGIN_LINE_NUMBERS, 50);
+	styledTextCtrl->StyleSetForeground(wxSTC_STYLE_LINENUMBER, wxColour(75, 75, 75));
+	styledTextCtrl->StyleSetBackground(wxSTC_STYLE_LINENUMBER, wxColour(220, 220, 220));
+	styledTextCtrl->SetMarginType(MARGIN_LINE_NUMBERS, wxSTC_MARGIN_NUMBER);
+
+
+	// ---- Enable code folding
+	styledTextCtrl->SetMarginType(MARGIN_FOLD, wxSTC_MARGIN_SYMBOL);
+	styledTextCtrl->SetMarginWidth(MARGIN_FOLD, 15);
+	styledTextCtrl->SetMarginMask(MARGIN_FOLD, wxSTC_MASK_FOLDERS);
+	styledTextCtrl->StyleSetBackground(MARGIN_FOLD, wxColor(200, 200, 200));
+	styledTextCtrl->SetMarginSensitive(MARGIN_FOLD, true);
+
+	// Properties found from http://www.scintilla.org/SciTEDoc.html
+	styledTextCtrl->SetProperty(wxT("fold"), wxT("1"));
+	styledTextCtrl->SetProperty(wxT("fold.comment"), wxT("1"));
+	styledTextCtrl->SetProperty(wxT("fold.compact"), wxT("1"));
+
+	wxColor grey(100, 100, 100);
+	styledTextCtrl->MarkerDefine(wxSTC_MARKNUM_FOLDER, wxSTC_MARK_ARROW);
+	styledTextCtrl->MarkerSetForeground(wxSTC_MARKNUM_FOLDER, grey);
+	styledTextCtrl->MarkerSetBackground(wxSTC_MARKNUM_FOLDER, grey);
+
+	styledTextCtrl->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN, wxSTC_MARK_ARROWDOWN);
+	styledTextCtrl->MarkerSetForeground(wxSTC_MARKNUM_FOLDEROPEN, grey);
+	styledTextCtrl->MarkerSetBackground(wxSTC_MARKNUM_FOLDEROPEN, grey);
+
+	styledTextCtrl->MarkerDefine(wxSTC_MARKNUM_FOLDERSUB, wxSTC_MARK_EMPTY);
+	styledTextCtrl->MarkerSetForeground(wxSTC_MARKNUM_FOLDERSUB, grey);
+	styledTextCtrl->MarkerSetBackground(wxSTC_MARKNUM_FOLDERSUB, grey);
+
+	styledTextCtrl->MarkerDefine(wxSTC_MARKNUM_FOLDEREND, wxSTC_MARK_ARROW);
+	styledTextCtrl->MarkerSetForeground(wxSTC_MARKNUM_FOLDEREND, grey);
+	styledTextCtrl->MarkerSetBackground(wxSTC_MARKNUM_FOLDEREND, _T("WHITE"));
+
+	styledTextCtrl->MarkerDefine(wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_ARROWDOWN);
+	styledTextCtrl->MarkerSetForeground(wxSTC_MARKNUM_FOLDEROPENMID, grey);
+	styledTextCtrl->MarkerSetBackground(wxSTC_MARKNUM_FOLDEROPENMID, _T("WHITE"));
+
+	styledTextCtrl->MarkerDefine(wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_EMPTY);
+	styledTextCtrl->MarkerSetForeground(wxSTC_MARKNUM_FOLDERMIDTAIL, grey);
+	styledTextCtrl->MarkerSetBackground(wxSTC_MARKNUM_FOLDERMIDTAIL, grey);
+
+	styledTextCtrl->MarkerDefine(wxSTC_MARKNUM_FOLDERTAIL, wxSTC_MARK_EMPTY);
+	styledTextCtrl->MarkerSetForeground(wxSTC_MARKNUM_FOLDERTAIL, grey);
+	styledTextCtrl->MarkerSetBackground(wxSTC_MARKNUM_FOLDERTAIL, grey);
+
+	// ---- End of code folding part
+
+	styledTextCtrl->SetWrapMode(wxSTC_WRAP_WORD); // other choice is wxSCI_WRAP_NONE
+
+	styledTextCtrl->StyleSetForeground(wxSTC_C_STRING, wxColour(150, 0, 0));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_PREPROCESSOR, wxColour(165, 105, 0));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_IDENTIFIER, wxColour(40, 0, 60));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_NUMBER, wxColour(0, 150, 0));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_CHARACTER, wxColour(150, 0, 0));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_WORD, wxColour(0, 0, 150));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_WORD2, wxColour(0, 150, 0));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_COMMENT, wxColour(150, 150, 150));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_COMMENTLINE, wxColour(150, 150, 150));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_COMMENTDOC, wxColour(150, 150, 150));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORD, wxColour(0, 0, 200));
+	styledTextCtrl->StyleSetForeground(wxSTC_C_COMMENTDOCKEYWORDERROR, wxColour(0, 0, 200));
+	styledTextCtrl->StyleSetBold(wxSTC_C_WORD, true);
+	styledTextCtrl->StyleSetBold(wxSTC_C_WORD2, true);
+	styledTextCtrl->StyleSetBold(wxSTC_C_COMMENTDOCKEYWORD, true);
+
+	// Configure keyword highlighting
+	styledTextCtrl->SetKeyWords(0, wxT("return for while break continue if switch define"));
+	styledTextCtrl->SetKeyWords(1, wxT("const int float void char double long"));
+}
+
 /** Event callback when a margin is clicked, used here for code folding */
 void wxEventClassGen::OnMarginClick(wxStyledTextEvent &event)
 {
@@ -189,7 +192,7 @@ void wxEventClassGen::OnMarginClick(wxStyledTextEvent &event)
     }
 }
 
-void wxEventClassGen::vOnButton(wxCommandEvent &event)
+void wxEventClassGen::OnButton(wxCommandEvent &event)
 {
     switch(event.GetId())
     {
@@ -284,7 +287,7 @@ void wxEventClassGen::vOnButton(wxCommandEvent &event)
     }
 }
 
-void wxEventClassGen::vSetUpMenuBar(void)
+void wxEventClassGen::SetUpMenuBar(void)
 {
 #if wxUSE_MENUS
 
@@ -306,7 +309,7 @@ void wxEventClassGen::vSetUpMenuBar(void)
 #endif // wxUSE_MENUS
 }
 
-void wxEventClassGen::vSetUpStatusBar(void)
+void wxEventClassGen::SetUpStatusBar(void)
 {
 #if wxUSE_STATUSBAR
     // create a status bar with some information about the used wxWidgets version
@@ -316,16 +319,15 @@ void wxEventClassGen::vSetUpStatusBar(void)
 #endif // wxUSE_STATUSBAR
 }
 
-void wxEventClassGen::vOnQuit(wxCommandEvent& WXUNUSED(event))
+void wxEventClassGen::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
     Close();
 }
 
-void wxEventClassGen::vOnAbout(wxCommandEvent& WXUNUSED(event))
+void wxEventClassGen::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
     wxAboutDialogInfo AboutDialogInfo;
-    AboutDialogInfo.AddDeveloper(wxT("Dr.rer.nat Martin Ettl \nTechnical University of Munich\nResearch Department Satellite Geodesy\n-Fundamentalstation Wettzell -\nSackenrieder Str.25\nD-93444 Bad Koetzting\nEmail:ettl@fs.wettzell.de\n "));
-    AboutDialogInfo.SetDescription(wxT("wxEventClassGen\nby\nEttl Martin"));
+    AboutDialogInfo.AddDeveloper(wxT("Dr. Martin Ettl"));
     AboutDialogInfo.SetName(wxT("wxEventClassGen"));
     AboutDialogInfo.SetVersion(wxT(__DATE__));
     wxAboutBox(AboutDialogInfo);
